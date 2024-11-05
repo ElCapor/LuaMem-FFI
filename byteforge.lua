@@ -1,5 +1,6 @@
 require 'io'
 local ffi = require 'ffi'
+local bit = require 'bit'
 
 local BytePlatform = {
     Linux = 0,
@@ -102,19 +103,46 @@ function lib:detach(pid)
     return result
 end
 
-function lib:read(pid, addr)
+function lib:read(pid, addr, config)
     local result = nil
     if self.platform == BytePlatform.Linux then
-        local data = self.libc.ptrace(ffi.C.PTRACE_PEEKDATA, pid, ffi.cast("void *", addr), nil)
-        if data == -1 then
-            print("Error read")
+        local config = config or {}
+        local size = config.size or 4
+
+        -- ptrace only allows to read words so we gotta trick it
+        local words = math.ceil(size / ffi.sizeof("long"))
+        local bytes = {}
+
+        for i = 0, words - 1 do
+            local word = self.libc.ptrace(ffi.C.PTRACE_PEEKDATA, pid, ffi.cast("void*", addr + i * ffi.sizeof("long")), nil)
+            if word == -1 then
+                print("Failed to read memory")
+                return nil
+            end
+    
+            -- Calculate number of bytes to copy from this word
+            local nbytes = ffi.sizeof("long")
+            if i == words - 1 then
+                -- If it's the last word, only copy the remaining bytes we need
+                nbytes = size % ffi.sizeof("long")
+                if nbytes == 0 then
+                    nbytes = ffi.sizeof("long")
+                end
+            end
+    
+            -- Copy each byte from the word into the bytes table
+            for j = 0, nbytes - 1 do
+                local byte = tonumber(bit.band(bit.rshift(word,j * 8), 0xFF))  -- Extract byte `j` from `word`
+                table.insert(bytes, byte)
+            end
         end
-        result = data
+    
+        result = bytes
     end
     return result
 end
 
 function lib:getversion()
-    return "0.0.1-beta"
+    return "0.0.2-beta"
 end
 return lib

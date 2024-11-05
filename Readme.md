@@ -11,6 +11,10 @@ Linux:
 Windows:
 
     -Nothing for now
-    
+
 ## Documentation
 check demo.lua for now
+
+# TODO
+
+[ ] use perror for handling errors
