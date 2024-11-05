@@ -23,9 +23,19 @@ local program_base = lib:get_base(pid)
 lib:attach(pid)
 
 --read the score from the game
-local score = lib:read(pid, program_base + score_offset)
+--local score = lib:read(pid, program_base + score_offset)
 
-print(string.format("The score is 0x%x", score))
+--print(string.format("The score is 0x%x", score))
+
+local instructions = 0x98F1
+
+local data = lib:read(pid, program_base+instructions, {size=6})
+
+if data then
+    for _,v in pairs(data) do
+        print(string.format("Data 0x%x", v))
+    end
+end
 
 -- detach or crash on linux
 lib:detach(pid)
