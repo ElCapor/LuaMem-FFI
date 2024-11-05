@@ -23,12 +23,15 @@ local program_base = lib:get_base(pid)
 lib:attach(pid)
 
 --read the score from the game
---local score = lib:read(pid, program_base + score_offset)
+-- lib:read query a single word from the memory by default, but you can tweak for n bytes
+-- example below
+local score = lib:read(pid, program_base + score_offset)
 
---print(string.format("The score is 0x%x", score))
+print(string.format("The score is 0x%x", score))
 
 local instructions = 0x98F1
 
+-- we want to read 6 bytes
 local data = lib:read(pid, program_base+instructions, {size=6})
 
 if data then

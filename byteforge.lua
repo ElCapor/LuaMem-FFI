@@ -143,6 +143,6 @@ function lib:read(pid, addr, config)
 end
 
 function lib:getversion()
-    return "0.0.1-beta"
+    return "0.0.2-beta"
 end
 return lib
