@@ -27,7 +27,9 @@ lib:attach(pid)
 -- example below
 local score = lib:read(pid, program_base + score_offset)
 
-print(string.format("The score is 0x%x", score))
+lib:write(pid, program_base+score_offset, {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10})
+
+print(string.format("The score is %s", table.concat(score)))
 
 local instructions = 0x98F1
 
