@@ -145,23 +145,6 @@ function lib:read(pid, addr, config)
     return result
 end
 
-local function packBytesToLong(bytes)
-    local long_size = ffi.sizeof("long")
-    if #bytes ~= long_size then
-        error("Input table must contain exactly " .. long_size .. " bytes.")
-    end
-
-    local longValue = 0
-    for i = 1, long_size do
-        if bytes[i] < 0 or bytes[i] > 255 then
-            error("Each byte must be between 0 and 255.")
-        end
-        longValue = longValue + bit.lshift(bytes[i], (long_size - i) * 8)
-    end
-    return longValue
-end
-
-
 function lib:write(pid, addr, data, config)
     local result = nil
     if self.platform == BytePlatform.Linux then
