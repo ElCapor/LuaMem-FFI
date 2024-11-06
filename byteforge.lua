@@ -162,7 +162,7 @@ local function packBytesToLong(bytes)
 end
 
 
-function lib:write_bytes(pid, addr, data, config)
+function lib:write(pid, addr, data, config)
     local result = nil
     if self.platform == BytePlatform.Linux then
         -- should be 8 on x64 systems
