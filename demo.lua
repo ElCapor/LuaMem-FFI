@@ -35,6 +35,10 @@ local instructions = 0x98F1
 
 -- we want to read 6 bytes
 local data = lib:read(pid, program_base+instructions, {size=6})
+-- nop out the bytes
+lib:write(pid, program_base+instructions, {data[1], data[2], 0x90, 0x90, 0x90, 0x90, 0x90, 0x90})
+local data = lib:read(pid, program_base+instructions, {size=6})
+
 
 if data then
     for _,v in pairs(data) do
